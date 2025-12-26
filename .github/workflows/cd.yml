@@ -1,0 +1,38 @@
+# .github/workflows/cd.yml
+
+name: CD Pipeline
+
+on:
+  push:
+    branches: [ "ui-frontend" ]
+  pull_request:
+    branches: [ "ui-frontend" ]
+
+jobs:
+  #########################################################
+  # Job 2: Deploy the Gradio App to Hugging Face Spaces
+  #########################################################
+  deploy-hf-space:
+    name: Deploy Hugging Face Space
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/ui-frontend'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true  # Recommended: If your Gradio app has large files/models
+
+      - name: Switch to ui-frontend branch
+        run: |
+          git checkout ui-frontend
+
+      - name: Push to Hugging Face Spaces
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          # Add remote
+          git remote add huggingface https://Yngvine:$HF_TOKEN@huggingface.co/spaces/Yngvine/Mlops
+          
+          # Push the local 'ui-frontend' branch to the remote 'main' branch
+          git push --force huggingface ui-frontend:main
