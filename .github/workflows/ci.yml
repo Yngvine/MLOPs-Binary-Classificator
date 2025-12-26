@@ -1,0 +1,38 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # (Prerequisite) Set up Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      # Step 2: Install dependencies
+      - name: Install dependencies
+        run: make install
+
+      # Step 3: Format code
+      - name: Format code
+        run: make format
+
+      # Step 4: Lint code
+      - name: Lint code
+        run: make lint
+
+      # Step 5: Test code
+      - name: Test code
+        run: make test
