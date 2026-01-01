@@ -1,7 +1,26 @@
 [project]
 name = "mlops-binary-classificator"
 version = "0.1.0"
-description = "Add your description here"
+description = "MLOps Binary Classification API with MLflow integration"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "black>=25.12.0",
+    "fastapi>=0.128.0",
+    "httpx>=0.28.1",
+    "numpy>=2.2.6",
+    "onnxruntime>=1.23.2",
+    "pandas>=2.3.3",
+    "pylint>=4.0.4",
+    "pytest>=9.0.2",
+]
+
+[dependency-groups]
+dev = [
+    "matplotlib>=3.10.8",
+    "mlflow>=3.8.1",
+    "onnx>=1.20.0",
+    "onnxscript>=0.5.7",
+    "seaborn>=0.13.2",
+    "torch>=2.9.1",
+]
