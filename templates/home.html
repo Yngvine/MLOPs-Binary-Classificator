@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLOps Image Classifier</title>
+    <style>
+        :root {
+            --primary-color: #4F46E5;
+            --hover-color: #4338ca;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        h1 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            font-size: 2.5rem;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #4b5563;
+            margin-bottom: 2rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn:hover {
+            background-color: var(--hover-color);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: #10b981;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #059669;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            font-size: 0.875rem;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MLOps Classifier</h1>
+        <p>
+            Welcome to the Image Classification API. <br>
+            This service provides endpoints for image preprocessing and classification as part of the MLOps Lab series.
+        </p>
+        
+        <div class="button-group">
+            <a href="/docs" class="btn">Swagger UI</a>
+            <a href="/redoc" class="btn btn-secondary">ReDoc</a>
+        </div>
+
+        <div class="footer">
+            &copy; 2025 MLOps Lab. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>
