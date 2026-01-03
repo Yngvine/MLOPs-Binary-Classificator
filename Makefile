@@ -3,7 +3,7 @@ install:
 	uv sync --no-dev
 
 test:
-	uv run --no-dev python -m pytest tests/ -vv --cov=custom_lib --cov=api --cov=cli
+	uv run --no-dev python -m pytest tests/ -vv --cov=custom_lib --cov=api
 
 format:	
 	uv run --no-dev black custom_lib/*.py api/*.py 

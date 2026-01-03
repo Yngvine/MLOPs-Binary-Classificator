@@ -15,9 +15,9 @@ class TestModelPrediction(unittest.TestCase):
         mock_session.get_inputs.return_value = [MagicMock(name='input')]
         mock_session.get_outputs.return_value = [MagicMock(name='output')]
         
-        # Mock return value: Class 0 higher probability
-        # Shape (1, 2) -> [[0.9, 0.1]]
-        mock_session.run.return_value = [np.array([[0.9, 0.1]], dtype=np.float32)]
+        # Mock return value: Class 0 (Gonen)
+        # Shape (1,) -> [0]
+        mock_session.run.return_value = [np.array([0], dtype=np.int64)]
         
         features = [100.0] * 10
         result = predict(features)
@@ -32,8 +32,8 @@ class TestModelPrediction(unittest.TestCase):
         mock_session.get_inputs.return_value = [MagicMock(name='input')]
         mock_session.get_outputs.return_value = [MagicMock(name='output')]
         
-        # Mock return value: Class 1 higher probability
-        mock_session.run.return_value = [np.array([[0.1, 0.9]], dtype=np.float32)]
+        # Mock return value: Class 1 (Jasmine)
+        mock_session.run.return_value = [np.array([1], dtype=np.int64)]
         
         features = [100.0] * 10
         result = predict(features)
