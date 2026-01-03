@@ -7,6 +7,9 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from fastapi.requests import Request
 import uvicorn
+import sys
+import os
+
 
 from custom_lib import predict
 
@@ -60,4 +63,4 @@ async def classify_rice(features: RiceFeatures):
 
 
 if __name__ == "__main__":
-    uvicorn.run("api.fastapi_main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("api.api_main:app", host="0.0.0.0", port=8000, reload=True)
