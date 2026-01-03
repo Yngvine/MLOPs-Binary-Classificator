@@ -1,14 +1,13 @@
 """
 API main module using FastAPI for mylib functions endpoints.
 """
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from fastapi.requests import Request
 import uvicorn
-import sys
-import os
 
 
 from custom_lib import predict
@@ -20,6 +19,7 @@ app = FastAPI(
 )
 
 templates = Jinja2Templates(directory="templates")
+
 
 class RiceFeatures(BaseModel):
     Area: int
@@ -33,10 +33,12 @@ class RiceFeatures(BaseModel):
     Roundness: float
     AspectRation: float
 
+
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     # Pass the 'request' object to the template so it can access app.routes
     return templates.TemplateResponse(request=request, name="home.html")
+
 
 @app.post("/classify/")
 async def classify_rice(features: RiceFeatures):
@@ -53,13 +55,13 @@ async def classify_rice(features: RiceFeatures):
             features.Extent,
             features.Perimeter,
             features.Roundness,
-            features.AspectRation
+            features.AspectRation,
         ]
-        
+
         pred_class = predict(feature_list)
         return {"predicted_class": pred_class}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 if __name__ == "__main__":

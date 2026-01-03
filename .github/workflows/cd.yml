@@ -38,8 +38,8 @@ jobs:
           context: . # Assumes Dockerfile is in the root directory
           push: true
           tags: 
-            ${{ secrets.DOCKERHUB_USERNAME }}/mlops:latest,
-            ${{ secrets.DOCKERHUB_USERNAME }}/mlops:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/mlops-bc:latest,
+            ${{ secrets.DOCKERHUB_USERNAME }}/mlops-bc:${{ github.sha }}
 
       - name: Trigger Render deployment
-        run: curl -X POST https://api.render.com/deploy/srv-d4tg8ummcj7s73bs1ou0?key=${{ secrets.RENDER_DEPLOY_HOOK_KEY_03 }}
+        run: curl -X POST https://api.render.com/deploy/srv-d5co62qli9vc73csgm4g?key=${{ secrets.RENDER_DEPLOY_HOOK_KEY }}

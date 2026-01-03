@@ -11,7 +11,6 @@ from typing import Literal, cast
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.patches import Rectangle
-import numpy as np
 import pandas as pd
 import seaborn as sns
 
@@ -116,7 +115,7 @@ def plot_violin_per_feature(
             inner=None,  # Remove default inner to make room for boxplot
             alpha=0.7,
         )
-        
+
         # Box plot (outliers and quartiles)
         sns.boxplot(
             data=df,
@@ -127,14 +126,24 @@ def plot_violin_per_feature(
             medianprops={"color": "black"},
             whiskerprops={"color": "black"},
             capprops={"color": "black"},
-            flierprops={"marker": "o", "markerfacecolor": "white", "markeredgecolor": "black", "markersize": 3},
+            flierprops={
+                "marker": "o",
+                "markerfacecolor": "white",
+                "markeredgecolor": "black",
+                "markersize": 3,
+            },
             ax=ax,
             zorder=2,
         )
-        
+
         ax.set_xlabel("")
         ax.set_ylabel(feature)
-        ax.set_xticklabels([CLASS_LABELS.get(cast(int, i), str(i)) for i in sorted(df["Class"].unique())])
+        ax.set_xticklabels(
+            [
+                CLASS_LABELS.get(cast(int, i), str(i))
+                for i in sorted(df["Class"].unique())
+            ]
+        )
         ax.set_title(f"{feature} Distribution by Class")
 
     # Hide unused subplots
@@ -242,7 +251,7 @@ def plot_class_distribution(
     )
 
     # Add count and percentage labels
-    for idx, (count, bar) in enumerate(zip(class_counts.values, bars.patches)):
+    for _, (count, bar) in enumerate(zip(class_counts.values, bars.patches)):
         rect = cast(Rectangle, bar)
         percentage = count / total * 100
         ax.text(
@@ -372,7 +381,12 @@ def plot_boxplot_comparison(
             legend=False,
         )
         ax.set_xlabel("")
-        ax.set_xticklabels([CLASS_LABELS.get(cast(int, i), str(i)) for i in sorted(df["Class"].unique())])
+        ax.set_xticklabels(
+            [
+                CLASS_LABELS.get(cast(int, i), str(i))
+                for i in sorted(df["Class"].unique())
+            ]
+        )
         ax.set_title(feature)
 
     for idx in range(n_features, len(axes)):
@@ -465,13 +479,17 @@ def create_imbalanced_dataset(
     new_counts = imbalanced_df["Class"].value_counts().sort_index()
 
     print(f"Created imbalanced dataset: {output_path}")
-    print(f"\nOriginal distribution:")
+    print("\nOriginal distribution:")
     for cls, count in original_counts.items():
-        print(f"  Class {cls} ({CLASS_LABELS.get(cast(int, cls), str(cls))}): {count:,}")
-    print(f"\nNew distribution:")
+        print(
+            f"  Class {cls} ({CLASS_LABELS.get(cast(int, cls), str(cls))}): {count:,}"
+        )
+    print("\nNew distribution:")
     for cls, count in new_counts.items():
         pct = count / len(imbalanced_df) * 100
-        print(f"  Class {cls} ({CLASS_LABELS.get(cast(int, cls), str(cls))}): {count:,} ({pct:.1f}%)")
+        print(
+            f"  Class {cls} ({CLASS_LABELS.get(cast(int, cls), str(cls))}): {count:,} ({pct:.1f}%)"
+        )
     print(f"\nImbalance ratio: {max(new_counts) / min(new_counts):.2f}:1")
 
     return imbalanced_df
@@ -530,11 +548,11 @@ def normalize_features(
     return result
 
 
-if __name__ == "__main__":
+def main():
     # Example usage
     df = load_data()
     print(f"Loaded {len(df)} samples")
-    print(f"\nClass distribution:")
+    print("\nClass distribution:")
     print(df["Class"].value_counts())
 
     # Create visualizations
@@ -544,3 +562,7 @@ if __name__ == "__main__":
 
     # Create imbalanced dataset (10% of class 1)
     # imbalanced = create_imbalanced_dataset(target_class=1, keep_percentage=10)
+
+
+if __name__ == "__main__":
+    main()
