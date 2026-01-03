@@ -1,3 +1,11 @@
+# mlflow tracked files
+mlruns/
+/feature_metadata.json
+mlflow.db
+test_pred.py
+
+/reports
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

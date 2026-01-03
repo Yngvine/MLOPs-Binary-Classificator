@@ -12,7 +12,7 @@ from .data import CLASS_LABELS, FEATURE_COLUMNS
 # Global variables
 _ORT_SESSION: ort.InferenceSession | None = None
 # Assuming the model is stored in the mlflow/model directory
-MODEL_PATH = Path(__file__).parent.parent / "mlflow" / "model" / "model.onnx"
+MODEL_PATH = Path(__file__).parent.parent / "mlflow" / "model" / "xgboost_binary.onnx"
 
 
 def _get_ort_session() -> ort.InferenceSession:
@@ -84,12 +84,13 @@ def predict(features: np.ndarray | list[float]) -> str:
 
     # Run inference
     input_name = session.get_inputs()[0].name
+    # Output 0 is the label (int64), Output 1 is probabilities
     output_name = session.get_outputs()[0].name
     
     outputs = session.run([output_name], {input_name: data})
     
-    # Assuming output is probabilities/logits, take argmax
+    # outputs[0] contains the predicted labels directly (e.g., [0] or [1])
     predictions = cast(np.ndarray, outputs[0])
-    predicted_idx = np.argmax(predictions, axis=1)[0]
+    predicted_idx = predictions[0]
 
     return CLASS_LABELS.get(int(predicted_idx), "Unknown")
