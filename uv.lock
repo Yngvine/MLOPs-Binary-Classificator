@@ -1484,24 +1484,26 @@ dependencies = [
     { name = "fastapi" },
     { name = "httpx" },
     { name = "imbalanced-learn" },
+    { name = "jinja2" },
+    { name = "matplotlib" },
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "numpy", version = "2.4.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "onnxruntime" },
     { name = "pandas" },
     { name = "pylint" },
     { name = "pytest" },
+    { name = "seaborn" },
+    { name = "uvicorn" },
 ]
 
 [package.dev-dependencies]
 dev = [
-    { name = "matplotlib" },
     { name = "mlflow" },
     { name = "onnx" },
     { name = "onnxconverter-common" },
     { name = "onnxmltools" },
     { name = "onnxscript" },
     { name = "optuna" },
-    { name = "seaborn" },
     { name = "torch" },
     { name = "xgboost" },
 ]
@@ -1512,23 +1514,25 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.128.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "imbalanced-learn", specifier = ">=0.14.1" },
+    { name = "jinja2", specifier = ">=3.1.6" },
+    { name = "matplotlib", specifier = ">=3.10.8" },
     { name = "numpy", specifier = ">=2.2.6" },
     { name = "onnxruntime", specifier = ">=1.23.2" },
     { name = "pandas", specifier = ">=2.3.3" },
     { name = "pylint", specifier = ">=4.0.4" },
     { name = "pytest", specifier = ">=9.0.2" },
+    { name = "seaborn", specifier = ">=0.13.2" },
+    { name = "uvicorn", specifier = ">=0.40.0" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "matplotlib", specifier = ">=3.10.8" },
     { name = "mlflow", specifier = ">=3.8.1" },
     { name = "onnx", specifier = ">=1.20.0" },
     { name = "onnxconverter-common", specifier = ">=1.16.0" },
     { name = "onnxmltools", specifier = ">=1.14.0" },
     { name = "onnxscript", specifier = ">=0.5.7" },
     { name = "optuna", specifier = ">=4.6.0" },
-    { name = "seaborn", specifier = ">=0.13.2" },
     { name = "torch", specifier = ">=2.9.1" },
     { name = "xgboost", specifier = ">=3.1.2" },
 ]
