@@ -3,7 +3,7 @@ import requests
 import os
 
 # Default backend URL (can be overridden by env var)
-DEFAULT_API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
+DEFAULT_API_URL = os.getenv("API_URL", "https://mlops-bc-latest.onrender.com")
 
 def classify_rice(
     area, major_axis, minor_axis, eccentricity, 
