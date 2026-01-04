@@ -6,4 +6,4 @@ scrape_configs:
   - job_name: 'fastapi_app'
     scheme: https # Render uses HTTPS
     static_configs:
-      - targets: ['mlops-bc.onrender.com'] 
+      - targets: ['mlops-bc-latest.onrender.com'] 
