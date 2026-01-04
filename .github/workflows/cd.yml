@@ -13,12 +13,59 @@ jobs:
   # Job 1: Deploy the API to Docker Hub and Render
   #################################################
   deploy-api:
-    name: Deploy API
+    name: Train (Conditional), Build and Deploy
     runs-on: ubuntu-latest  
     if: github.ref == 'refs/heads/main'
+
+    env:
+      MLFLOW_DIR: ${{ github.workspace }}/mlruns
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # Needed to read commit messages
+
+      - name: Check for #TRAIN tag
+        run: |
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          if echo "$COMMIT_MESSAGE" | grep -q "#TRAIN"; then
+            echo "TRAIN_AND_SERIALIZE=true" >> $GITHUB_ENV
+          else
+            echo "TRAIN_AND_SERIALIZE=false" >> $GITHUB_ENV
+          fi
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+
+      - name: Install dependencies
+        run: uv sync --all-extras --dev
+
+      # 2. Train and Serialize with MLflow configuration
+      - name: Train Model
+        if: env.TRAIN_AND_SERIALIZE == 'true'
+        env:
+          # Set the tracking URI as requested
+          MLFLOW_TRACKING_URI: ${{ env.MLFLOW_DIR }}
+        run: |
+          echo "Training model..."
+          uv run python custom_lib/train.py
+
+      # 3. Remove MLflow directory (Cleanup)
+      - name: Remove MLflow Directory
+        if: always() # Run even if training fails
+        run: rm -rf ${{ env.MLFLOW_DIR }}
+
+      - name: Ensure metrics.json exists
+        run: |
+          if [ ! -f metrics.json ]; then
+            echo '{"model_accuracy": 0.0}' > metrics.json
+          fi
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3

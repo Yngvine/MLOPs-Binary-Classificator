@@ -23,6 +23,7 @@ COPY custom_lib/ /app/custom_lib/
 COPY mlflow/model/ /app/mlflow/model/
 COPY templates/ /app/templates/
 COPY pyproject.toml uv.lock /app/
+COPY metrics.json /app/metrics.json
 
 # Copy uv binary
 COPY --from=builder /usr/local/bin/uv /usr/local/bin/uv

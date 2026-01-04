@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  # 1. Scrape your API (Live Production Metrics)
+  - job_name: 'fastapi_app'
+    scheme: https # Render uses HTTPS
+    static_configs:
+      - targets: ['mlops-bc.onrender.com'] 
