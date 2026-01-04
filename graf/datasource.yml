@@ -1,0 +1,9 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: https://mlops-bcp.onrender.com
+    isDefault: true
+    editable: true

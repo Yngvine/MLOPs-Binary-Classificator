@@ -1,0 +1,17 @@
+FROM grafana/grafana:latest
+
+# Copy the datasource configuration
+# This ensures Grafana connects to Prometheus automatically on startup
+COPY datasource.yml /etc/grafana/provisioning/datasources/datasource.yml
+
+# Copy Dashboard Provisioning Config
+COPY dashboard.yml /etc/grafana/provisioning/dashboards/dashboard.yml
+
+# Copy the Dashboard JSON
+USER root
+RUN mkdir -p /etc/grafana/provisioning/dashboards/json
+COPY dashboard.json /etc/grafana/provisioning/dashboards/json/dashboard.json
+USER grafana
+
+# Expose the default Grafana port
+EXPOSE 3000
