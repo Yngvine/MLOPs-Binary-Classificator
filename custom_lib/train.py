@@ -1,16 +1,16 @@
 import os
 import sys
 from pathlib import Path
-import mlflow
-from mlflow.tracking import MlflowClient
 
 # Add the project root to sys.path so imports work correctly
-sys.path.append(str(Path(__file__).parent.parent))
+sys.path.append(str(Path(__file__).parent.parent / "mlflow"))
 
+import mlflow
+from mlflow.tracking import MlflowClient
 # Note: Assuming your local folder is named 'mlflow' and contains training.py
 # If this conflicts with the library 'mlflow', you might need to rename the folder to 'ml_modules'
-from ..mlflow.training import run_optimization, EXPERIMENT_NAME
-from ..mlflow.serialization import serialize_best_model
+from training import run_optimization, EXPERIMENT_NAME
+from serialization import serialize_best_model
 import json
 
 def get_best_metric_from_mlflow(experiment_name: str, metric_name: str = "val_f1") -> float:
