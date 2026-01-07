@@ -35,22 +35,37 @@ PREDICTION_COUNTER = Counter(
 PREDICTION_COUNTER.labels(class_label="Gonen").inc(0)
 PREDICTION_COUNTER.labels(class_label="Jasmine").inc(0)
 
-MODEL_ACCURACY = Gauge(
-    "model_accuracy", 
-    "Accuracy of the currently deployed model"
+MODEL_F1_SCORE = Gauge(
+    "model_f1_score", 
+    "F1 Score of the currently deployed model"
 )
 
-# Load accuracy from the file generated during training
+MODEL_AUC_PR = Gauge(
+    "model_auc_pr",
+    "AUC-PR of the currently deployed model"
+)
+
+MODEL_MEAN_RECALL = Gauge(
+    "model_mean_recall",
+    "Mean Recall of the currently deployed model"
+)
+
+
+# Load F1 score from the file generated during training
 try:
     with open("metrics.json", "r") as f:
         data = json.load(f)
-        acc = data.get("model_accuracy", 0.0)
-        MODEL_ACCURACY.set(acc)
-        print(f"Loaded model accuracy: {acc}")
+        f1_score = data.get("f1_score", 0.0)
+        MODEL_F1_SCORE.set(f1_score)
+        auc_pr = data.get("auc_pr", 0.0)
+        MODEL_AUC_PR.set(auc_pr)
+        mean_recall = data.get("mean_recall", 0.0)
+        MODEL_MEAN_RECALL.set(mean_recall)
 except FileNotFoundError:
-    print("metrics.json not found. Setting default accuracy.")
-    MODEL_ACCURACY.set(0.0)
-
+    print("metrics.json not found. Setting default F1 score.")
+    MODEL_F1_SCORE.set(0.0)
+    MODEL_AUC_PR.set(0.0)
+    MODEL_MEAN_RECALL.set(0.0)
 templates = Jinja2Templates(directory="templates")
 
 

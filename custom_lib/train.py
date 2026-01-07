@@ -9,8 +9,8 @@ import mlflow
 from mlflow.tracking import MlflowClient
 # Note: Assuming your local folder is named 'mlflow' and contains training.py
 # If this conflicts with the library 'mlflow', you might need to rename the folder to 'ml_modules'
-from training import run_optimization, EXPERIMENT_NAME
-from serialization import serialize_best_model
+from training import run_optimization, EXPERIMENT_NAME #type: ignore
+from serialization import serialize_best_model #type: ignore
 import json
 
 def get_best_metric_from_mlflow(experiment_name: str, metric_name: str = "val_f1") -> float:
@@ -56,10 +56,12 @@ def main():
     print("\n=== Step 3: Saving Metrics for API ===")
     # Retrieve the metric from MLflow instead of modifying training.py
     # Ensure 'accuracy' matches exactly what you log in training.py (e.g. 'accuracy', 'f1_score')
-    best_metric = get_best_metric_from_mlflow(EXPERIMENT_NAME, metric_name="val_f1")
+    best_model_f1 = get_best_metric_from_mlflow(EXPERIMENT_NAME, metric_name="val_f1")
+    best_model_auc_pr = get_best_metric_from_mlflow(EXPERIMENT_NAME, metric_name="val_auc_pr")
+    best_model_mean_recall = get_best_metric_from_mlflow(EXPERIMENT_NAME, metric_name="val_mean_recall")
     
     # Save to a file that the API will read
-    metrics_data = {"model_accuracy": best_metric}
+    metrics_data = {"f1_score": best_model_f1, "auc_pr": best_model_auc_pr, "mean_recall": best_model_mean_recall}
     with open("metrics.json", "w") as f:
         json.dump(metrics_data, f)
     
