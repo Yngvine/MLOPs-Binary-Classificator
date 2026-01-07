@@ -34,7 +34,7 @@ def get_best_metric_from_mlflow(experiment_name: str, metric_name: str = "val_f1
     )
 
     if not runs:
-        print("No runs found.")
+        print("No runs found")
         return 0.0
 
     best_run = runs[0]
