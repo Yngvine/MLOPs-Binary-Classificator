@@ -49,24 +49,24 @@ def build_ui():
                 
                 gr.Markdown("### Geometric Features")
                 with gr.Row():
-                    area = gr.Number(label="Area", value=6322)
-                    convex_area = gr.Number(label="Convex Area", value=6525)
+                    area = gr.Slider(label="Area", minimum=2500, maximum=10500, value=6322, step=1)
+                    convex_area = gr.Slider(label="Convex Area", minimum=2500, maximum=11500, value=6525, step=1)
                 
                 with gr.Row():
-                    major_axis = gr.Number(label="Major Axis Length", value=164.16)
-                    minor_axis = gr.Number(label="Minor Axis Length", value=50.17)
+                    major_axis = gr.Slider(label="Major Axis Length", minimum=70, maximum=190, value=164.16, step=0.01)
+                    minor_axis = gr.Slider(label="Minor Axis Length", minimum=30, maximum=90, value=50.17, step=0.01)
                 
                 with gr.Row():
-                    perimeter = gr.Number(label="Perimeter", value=359.51)
-                    equiv_diameter = gr.Number(label="Equiv Diameter", value=89.71)
+                    perimeter = gr.Slider(label="Perimeter", minimum=190, maximum=520, value=359.51, step=0.01)
+                    equiv_diameter = gr.Slider(label="Equiv Diameter", minimum=50, maximum=120, value=89.71, step=0.01)
                 
                 with gr.Row():
-                    eccentricity = gr.Number(label="Eccentricity", value=0.95)
-                    extent = gr.Number(label="Extent", value=0.56)
+                    eccentricity = gr.Slider(label="Eccentricity", minimum=0.6, maximum=1.0, value=0.95, step=0.001)
+                    extent = gr.Slider(label="Extent", minimum=0.3, maximum=0.9, value=0.56, step=0.001)
                 
                 with gr.Row():
-                    roundness = gr.Number(label="Roundness", value=0.61)
-                    aspect_ratio = gr.Number(label="Aspect Ratio", value=3.27)
+                    roundness = gr.Slider(label="Roundness", minimum=0.1, maximum=1.0, value=0.61, step=0.001)
+                    aspect_ratio = gr.Slider(label="Aspect Ratio", minimum=1.0, maximum=4.0, value=3.27, step=0.001)
                 
                 submit_btn = gr.Button("Classify", variant="primary")
             

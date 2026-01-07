@@ -32,7 +32,7 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           # Add remote
-          git remote add huggingface https://Yngvine:$HF_TOKEN@huggingface.co/spaces/Yngvine/Mlops
+          git remote add huggingface https://Yngvine:$HF_TOKEN@huggingface.co/spaces/Yngvine/MLOPs-BC
           
           # Push the local 'ui-frontend' branch to the remote 'main' branch
           git push --force huggingface ui-frontend:main
