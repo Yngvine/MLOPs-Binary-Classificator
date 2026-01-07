@@ -30,6 +30,11 @@ PREDICTION_COUNTER = Counter(
     ["class_label"]
 )
 
+# FIX: Initialize the counter to 0 for known classes
+# This ensures the metric appears in /metrics right from the start
+PREDICTION_COUNTER.labels(class_label="Gonen").inc(0)
+PREDICTION_COUNTER.labels(class_label="Jasmine").inc(0)
+
 MODEL_ACCURACY = Gauge(
     "model_accuracy", 
     "Accuracy of the currently deployed model"
