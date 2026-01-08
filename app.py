@@ -146,13 +146,15 @@ def build_ui():
                 gr.Markdown("### 🛠️ Grain Simulator")
                 gr.Markdown("Adjust the physical dimensions (Major & Minor Axis) to simulate a rice grain. **Rotation** affects the Extent (Bounding Box).")
                 
-                # Visualizer HTML Component
-                vis_html = gr.HTML(get_rice_visualizer_html())
-
                 with gr.Row():
-                    sim_major = gr.Slider(label="Major Axis Length", minimum=70, maximum=190, value=164.16, step=0.1)
-                    sim_minor = gr.Slider(label="Minor Axis Length", minimum=30, maximum=90, value=50.17, step=0.1)
-                    sim_rotation = gr.Slider(label="Grain Rotation (Degrees)", minimum=0, maximum=90, value=0, step=1)
+                    with gr.Column(scale=1):
+                        sim_major = gr.Slider(label="Major Axis Length", minimum=70, maximum=190, value=164.16, step=0.1)
+                        sim_minor = gr.Slider(label="Minor Axis Length", minimum=30, maximum=90, value=50.17, step=0.1)
+                        sim_rotation = gr.Slider(label="Grain Rotation (Degrees)", minimum=0, maximum=90, value=0, step=1)
+                    
+                    with gr.Column(scale=1):
+                        # Visualizer HTML Component
+                        vis_html = gr.HTML(get_rice_visualizer_html())
                 
                 gr.Markdown("#### Calculated Geometry")
                 with gr.Group():
