@@ -50,7 +50,7 @@ class _ModelSession:
         """Swaps the active model if it exists."""
         model_path = MODEL_DIR / model_name
         if not model_path.exists():
-             raise FileNotFoundError(f"Model {model_name} not found in {MODEL_DIR}")
+            raise FileNotFoundError(f"Model {model_name} not found in {MODEL_DIR}")
         
         # Force reload
         cls._get_session(model_name)

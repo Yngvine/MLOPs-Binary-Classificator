@@ -9,7 +9,6 @@ from fastapi.responses import HTMLResponse, Response
 from fastapi.requests import Request
 import uvicorn
 import json
-import os
 from prometheus_client import Counter, Gauge, generate_latest, CONTENT_TYPE_LATEST
 
 
@@ -63,7 +62,7 @@ MODEL_MEAN_RECALL = Gauge(
 
 # Load F1 score from the file generated during training
 try:
-    with open("metrics.json", "r") as f:
+    with open("metrics.json", "r", encoding="utf-8") as f:
         data = json.load(f)
         f1_score = data.get("f1_score", 0.0)
         MODEL_F1_SCORE.set(f1_score)

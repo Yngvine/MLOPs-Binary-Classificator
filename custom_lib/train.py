@@ -1,12 +1,11 @@
-import os
 import sys
 from pathlib import Path
 
 # Add the project root to sys.path so imports work correctly
 sys.path.append(str(Path(__file__).parent.parent / "mlflow"))
 
-import mlflow
-from mlflow.tracking import MlflowClient
+# Pylint confuses the local 'mlflow' folder with the library 'mlflow'
+from mlflow.tracking import MlflowClient # pylint: disable=no-name-in-module, import-error
 # Note: Assuming your local folder is named 'mlflow' and contains training.py
 # If this conflicts with the library 'mlflow', you might need to rename the folder to 'ml_modules'
 from training import run_optimization, EXP_XGBOOST #type: ignore
@@ -63,7 +62,7 @@ def main():
     
     # Save to a file that the API will read
     metrics_data = {"f1_score": best_model_f1, "auc_pr": best_model_auc_pr, "mean_recall": best_model_mean_recall}
-    with open("metrics.json", "w") as f:
+    with open("metrics.json", "w", encoding="utf-8") as f:
         json.dump(metrics_data, f)
     
     print(f"Saved metrics to metrics.json: {metrics_data}") 
