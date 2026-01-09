@@ -1,6 +1,8 @@
 import sys
 from pathlib import Path
 
+# Add project root to sys.path
+sys.path.append(str(Path(__file__).parent.parent))
 
 from mlflow.tracking import MlflowClient # pylint: disable=no-name-in-module, import-error
 from ml_modules.training import run_optimization, EXP_XGBOOST #type: ignore
