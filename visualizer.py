@@ -1,20 +1,98 @@
 import html
+import os
 
 def get_rice_visualizer_html():
-    html_content = """
+    # Load Audio Base64
+    try:
+        audio_path = os.path.join(os.path.dirname(__file__), "audio_b64.txt")
+        with open(audio_path, "r") as f:
+            audio_data = f.read().strip()
+        audio_src = f"data:audio/mp3;base64,{audio_data}"
+    except Exception as e:
+        print(f"Error loading audio: {e}")
+        audio_src = ""
+
+    html_template = """
 <!DOCTYPE html>
 <html>
 <head>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
   <style>
-    body { margin: 0; overflow: hidden; display: flex; justify-content: center; align-items: center; background: transparent; }
+    body { margin: 0; overflow: hidden; display: flex; justify-content: center; align-items: center; background: transparent; font-family: sans-serif; }
     canvas { border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    
+    /* Audio Control Button */
+    #mute-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+        cursor: pointer;
+        z-index: 100;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: background 0.2s;
+    }
+    #mute-btn:hover { background: rgba(0, 0, 0, 0.8); }
   </style>
 </head>
 <body>
+  <!-- Audio Element -->
+  <audio id="bg-music" loop>
+    <source src="__AUDIO_SRC__" type="audio/mp3">
+  </audio>
+
+  <!-- Mute Button -->
+  <button id="mute-btn" title="Toggle Sound">🔇</button>
+
   <script>
     let params = { major: 164.16, minor: 50.17, rotation: 0 };
     
+    // Audio Logic
+    const audio = document.getElementById('bg-music');
+    const btn = document.getElementById('mute-btn');
+    let isPlaying = false;
+
+    // Try to play immediately (might be blocked)
+    function tryPlay() {
+        audio.play().then(() => {
+            isPlaying = true;
+            btn.textContent = "🔊";
+        }).catch(e => {
+            console.log("Autoplay blocked:", e);
+            btn.textContent = "🔇"; // Show muted initially if blocked
+        });
+    }
+
+    // Toggle on Click
+    btn.onclick = () => {
+        if (audio.paused) {
+            audio.play();
+            btn.textContent = "🔊";
+        } else {
+            audio.pause();
+            btn.textContent = "🔇";
+        }
+    };
+
+    // Play on first interaction with the document if autoplay failed
+    document.body.addEventListener('click', () => {
+        if (audio.paused && btn.textContent === "🔊") {
+             // If we think it should be playing but it's not (rare state), play
+             audio.play();
+        }
+    }, { once: true });
+
+    // Attempt start
+    tryPlay();
+
     window.addEventListener('message', (event) => {
          const data = event.data;
          if (data.type === 'update_params') {
@@ -25,6 +103,8 @@ def get_rice_visualizer_html():
     });
 
     const s = (p) => {
+"""
+    html_content = html_template.replace("__AUDIO_SRC__", audio_src) + """
         let camAngleY = 0;
         
         // Icosahedron Data
