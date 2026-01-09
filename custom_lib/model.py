@@ -10,26 +10,61 @@ import onnxruntime as ort
 
 from .data import CLASS_LABELS, FEATURE_COLUMNS
 
-# Assuming the model is stored in the mlflow/model directory
-MODEL_PATH = Path(__file__).parent.parent / "mlflow" / "model" / "xgboost_binary.onnx"
+# Assuming the model is stored in the mlflow/model directory (DEFAULT)
+MODEL_DIR = Path(__file__).parent.parent / "mlflow" / "model"
+# Default model path - can be switched
+DEFAULT_MODEL_NAME = "xgboost_binary.onnx"
 
 
 class _ModelSession:
     """Singleton to hold the ONNX session."""
 
     instance: ort.InferenceSession | None = None
+    current_model_name: str = DEFAULT_MODEL_NAME
 
     @classmethod
     def get(cls) -> ort.InferenceSession:
-        if cls.instance is None:
-            if not MODEL_PATH.exists():
-                raise FileNotFoundError(
-                    f"ONNX model not found at {MODEL_PATH}. "
-                    "Please ensure the model is trained and saved."
-                )
-            cls.instance = ort.InferenceSession(str(MODEL_PATH))
-        return cls.instance
+        return cls._get_session(cls.current_model_name)
 
+    @classmethod
+    def _get_session(cls, model_name: str) -> ort.InferenceSession:
+        """Helper to get or create session for a specific model name"""
+        # If we are requesting a different model than loaded, or no model is loaded
+        if cls.instance is None or cls.current_model_name != model_name:
+            model_path = MODEL_DIR / model_name
+            
+            if not model_path.exists():
+                raise FileNotFoundError(
+                    f"ONNX model not found at {model_path}. "
+                    "Please ensure the model is available."
+                )
+            
+            print(f"Loading ONNX model: {model_name}")
+            cls.instance = ort.InferenceSession(str(model_path))
+            cls.current_model_name = model_name
+            
+        return cls.instance
+    
+    @classmethod
+    def set_model(cls, model_name: str):
+        """Swaps the active model if it exists."""
+        model_path = MODEL_DIR / model_name
+        if not model_path.exists():
+             raise FileNotFoundError(f"Model {model_name} not found in {MODEL_DIR}")
+        
+        # Force reload
+        cls._get_session(model_name)
+
+def set_active_model(model_name: str):
+    """
+    Switch the active model used for predictions.
+    
+    Parameters
+    ----------
+    model_name : str
+        Filename of the .onnx model to use (e.g. 'xgboost_binary.onnx')
+    """
+    _ModelSession.set_model(model_name)
 
 def _get_ort_session() -> ort.InferenceSession:
     """
