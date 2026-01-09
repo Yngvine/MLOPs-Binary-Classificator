@@ -31,8 +31,18 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
+          # Configure git (required for commit)
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+
+          # Create a fresh orphan branch with NO history
+          # This ensures we don't push old deleted large files (blobs) to HF
+          git checkout --orphan temp-deploy-branch
+          git add .
+          git commit -m "Deploy to HF Spaces"
+
           # Add remote
           git remote add huggingface https://Yngvine:$HF_TOKEN@huggingface.co/spaces/Yngvine/MLOPs-BC
           
-          # Push the local 'ui-frontend' branch to the remote 'main' branch
-          git push --force huggingface ui-frontend:main
+          # Force push this clean state to remote main
+          git push --force huggingface temp-deploy-branch:main
