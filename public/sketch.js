@@ -149,32 +149,38 @@ function setupControls() {
         updateCalculatedValues();
     });
 
-    // Eccentricity
+    // Eccentricity (optional control)
     const eccentricity = document.getElementById('eccentricity');
     const eccentricityValue = document.getElementById('eccentricityValue');
-    eccentricity.addEventListener('input', (e) => {
-        riceParams.eccentricity = parseFloat(e.target.value);
-        eccentricityValue.textContent = e.target.value;
-        updateCalculatedValues();
-    });
+    if (eccentricity && eccentricityValue) {
+        eccentricity.addEventListener('input', (e) => {
+            riceParams.eccentricity = parseFloat(e.target.value);
+            eccentricityValue.textContent = e.target.value;
+            updateCalculatedValues();
+        });
+    }
 
-    // Roundness
+    // Roundness (optional control)
     const roundness = document.getElementById('roundness');
     const roundnessValue = document.getElementById('roundnessValue');
-    roundness.addEventListener('input', (e) => {
-        riceParams.roundness = parseFloat(e.target.value);
-        roundnessValue.textContent = e.target.value;
-        updateCalculatedValues();
-    });
+    if (roundness && roundnessValue) {
+        roundness.addEventListener('input', (e) => {
+            riceParams.roundness = parseFloat(e.target.value);
+            roundnessValue.textContent = e.target.value;
+            updateCalculatedValues();
+        });
+    }
 
-    // Aspect Ratio
+    // Aspect Ratio (optional control)
     const aspectRatio = document.getElementById('aspectRatio');
     const aspectRatioValue = document.getElementById('aspectRatioValue');
-    aspectRatio.addEventListener('input', (e) => {
-        riceParams.aspectRatio = parseFloat(e.target.value);
-        aspectRatioValue.textContent = e.target.value;
-        updateCalculatedValues();
-    });
+    if (aspectRatio && aspectRatioValue) {
+        aspectRatio.addEventListener('input', (e) => {
+            riceParams.aspectRatio = parseFloat(e.target.value);
+            aspectRatioValue.textContent = e.target.value;
+            updateCalculatedValues();
+        });
+    }
 
     // Reset button
     document.getElementById('resetBtn').addEventListener('click', () => {
@@ -188,9 +194,11 @@ function setupControls() {
 
     // Toggle auto-rotate on canvas click
     const canvas = document.getElementById('p5Canvas');
-    canvas.addEventListener('dblclick', () => {
+    if (canvas) {
+        canvas.addEventListener('dblclick', () => {
         autoRotate = !autoRotate;
-    });
+        });
+    }
 }
 
 function updateCalculatedValues() {
@@ -211,7 +219,8 @@ function updateCalculatedValues() {
 
     // Extent (area ratio)
     const extent = riceParams.roundness * 0.85; // Approximation
-    document.getElementById('extentValue').textContent = extent.toFixed(3);
+    const extEl = document.getElementById('extentValue');
+    if (extEl) extEl.textContent = extent.toFixed(3);
 }
 
 function resetToDefaults() {
@@ -227,12 +236,15 @@ function resetToDefaults() {
     document.getElementById('majorAxisValue').textContent = '120';
     document.getElementById('minorAxis').value = 40;
     document.getElementById('minorAxisValue').textContent = '40';
-    document.getElementById('eccentricity').value = 0.8;
-    document.getElementById('eccentricityValue').textContent = '0.8';
-    document.getElementById('roundness').value = 0.6;
-    document.getElementById('roundnessValue').textContent = '0.6';
-    document.getElementById('aspectRatio').value = 3;
-    document.getElementById('aspectRatioValue').textContent = '3';
+    const eccEl = document.getElementById('eccentricity');
+    const eccVal = document.getElementById('eccentricityValue');
+    if (eccEl && eccVal) { eccEl.value = 0.8; eccVal.textContent = '0.8'; }
+    const rndEl = document.getElementById('roundness');
+    const rndVal = document.getElementById('roundnessValue');
+    if (rndEl && rndVal) { rndEl.value = 0.6; rndVal.textContent = '0.6'; }
+    const arEl = document.getElementById('aspectRatio');
+    const arVal = document.getElementById('aspectRatioValue');
+    if (arEl && arVal) { arEl.value = 3; arVal.textContent = '3'; }
 
     updateCalculatedValues();
 }
@@ -254,12 +266,15 @@ function randomizeParameters() {
     document.getElementById('majorAxisValue').textContent = randomMajor;
     document.getElementById('minorAxis').value = randomMinor;
     document.getElementById('minorAxisValue').textContent = randomMinor;
-    document.getElementById('eccentricity').value = randomEcc;
-    document.getElementById('eccentricityValue').textContent = randomEcc;
-    document.getElementById('roundness').value = randomRound;
-    document.getElementById('roundnessValue').textContent = randomRound;
-    document.getElementById('aspectRatio').value = randomAspect;
-    document.getElementById('aspectRatioValue').textContent = randomAspect;
+    const eccEl2 = document.getElementById('eccentricity');
+    const eccVal2 = document.getElementById('eccentricityValue');
+    if (eccEl2 && eccVal2) { eccEl2.value = randomEcc; eccVal2.textContent = randomEcc; }
+    const rndEl2 = document.getElementById('roundness');
+    const rndVal2 = document.getElementById('roundnessValue');
+    if (rndEl2 && rndVal2) { rndEl2.value = randomRound; rndVal2.textContent = randomRound; }
+    const arEl2 = document.getElementById('aspectRatio');
+    const arVal2 = document.getElementById('aspectRatioValue');
+    if (arEl2 && arVal2) { arEl2.value = randomAspect; arVal2.textContent = randomAspect; }
 
     updateCalculatedValues();
 }
