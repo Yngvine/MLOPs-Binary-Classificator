@@ -117,7 +117,7 @@ async def metrics():
 
 @app.post("/classify/")
 async def classify_rice(features: RiceFeatures):
-    """Classify rice grain based on features."""
+    """Classify rice grain based on features"""
     try:
         # 1. Update active model if requested (and different)
         # set_active_model handles avoiding reload if same model
