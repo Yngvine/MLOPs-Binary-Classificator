@@ -4,3 +4,9 @@ services:
     restart: unless-stopped
     ports:
       - 5003:8000
+
+  mlops-rice-ui:
+    image: yngvin/mlops-rice-ui:latest
+    restart: unless-stopped
+    ports:
+      - 8003:5003
