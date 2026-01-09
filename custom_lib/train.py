@@ -9,7 +9,7 @@ import mlflow
 from mlflow.tracking import MlflowClient
 # Note: Assuming your local folder is named 'mlflow' and contains training.py
 # If this conflicts with the library 'mlflow', you might need to rename the folder to 'ml_modules'
-from training import run_optimization, EXPERIMENT_NAME #type: ignore
+from training import run_optimization, EXP_XGBOOST #type: ignore
 from serialization import serialize_best_model #type: ignore
 import json
 
@@ -56,9 +56,10 @@ def main():
     print("\n=== Step 3: Saving Metrics for API ===")
     # Retrieve the metric from MLflow instead of modifying training.py
     # Ensure 'accuracy' matches exactly what you log in training.py (e.g. 'accuracy', 'f1_score')
-    best_model_f1 = get_best_metric_from_mlflow(EXPERIMENT_NAME, metric_name="val_f1")
-    best_model_auc_pr = get_best_metric_from_mlflow(EXPERIMENT_NAME, metric_name="val_auc_pr")
-    best_model_mean_recall = get_best_metric_from_mlflow(EXPERIMENT_NAME, metric_name="val_mean_recall")
+    # Defaulting to EXP_XGBOOST as the primary experiment for metrics reporting
+    best_model_f1 = get_best_metric_from_mlflow(EXP_XGBOOST, metric_name="val_f1")
+    best_model_auc_pr = get_best_metric_from_mlflow(EXP_XGBOOST, metric_name="val_auc_pr")
+    best_model_mean_recall = get_best_metric_from_mlflow(EXP_XGBOOST, metric_name="val_mean_recall")
     
     # Save to a file that the API will read
     metrics_data = {"f1_score": best_model_f1, "auc_pr": best_model_auc_pr, "mean_recall": best_model_mean_recall}
