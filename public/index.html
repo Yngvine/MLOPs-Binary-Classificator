@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RicePainter - 3D Rice Grain Visualization</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>🌾 RicePainter</h1>
+        <p>Interactive 3D Rice Grain Visualization</p>
+      </header>
+
+      <div class="main-content">
+        <div class="controls-panel">
+          <h2>Grain Parameters</h2>
+          <form id="riceForm">
+            <div class="controls-grid">
+              <div class="form-group">
+                <label for="majorAxis">Major Axis Length</label>
+                <input
+                  type="range"
+                  id="majorAxis"
+                  min="50"
+                  max="200"
+                  value="120"
+                  step="1"
+                />
+                <span id="majorAxisValue" class="value-indicator">120</span>
+              </div>
+
+              <div class="form-group">
+                <label for="minorAxis">Minor Axis Length</label>
+                <input
+                  type="range"
+                  id="minorAxis"
+                  min="20"
+                  max="100"
+                  value="40"
+                  step="1"
+                />
+                <span id="minorAxisValue" class="value-indicator">40</span>
+              </div>
+
+              <div class="form-group">
+                <label for="eccentricity">Eccentricity</label>
+                <input
+                  type="range"
+                  id="eccentricity"
+                  min="0"
+                  max="1"
+                  value="0.8"
+                  step="0.01"
+                />
+                <span id="eccentricityValue" class="value-indicator">0.8</span>
+              </div>
+
+              <div class="form-group">
+                <label for="roundness">Roundness</label>
+                <input
+                  type="range"
+                  id="roundness"
+                  min="0"
+                  max="1"
+                  value="0.6"
+                  step="0.01"
+                />
+                <span id="roundnessValue" class="value-indicator">0.6</span>
+              </div>
+
+              <div class="form-group">
+                <label for="aspectRatio">Aspect Ratio</label>
+                <input
+                  type="range"
+                  id="aspectRatio"
+                  min="1"
+                  max="5"
+                  value="3"
+                  step="0.1"
+                />
+                <span id="aspectRatioValue" class="value-indicator">3</span>
+              </div>
+            </div>
+
+            <div class="info-panel">
+              <h3>Calculated Data</h3>
+              <div class="calculated-data">
+                <div class="data-item">
+                  <span class="data-label">Area:</span>
+                  <span id="areaValue">-</span>
+                </div>
+                <div class="data-item">
+                  <span class="data-label">Perimeter:</span>
+                  <span id="perimeterValue">-</span>
+                </div>
+                <div class="data-item">
+                  <span class="data-label">Equiv. Diameter:</span>
+                  <span id="equivDiameterValue">-</span>
+                </div>
+                <div class="data-item">
+                  <span class="data-label">Extent:</span>
+                  <span id="extentValue">-</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="button-group">
+              <button type="button" id="resetBtn">Reset</button>
+              <button type="button" id="randomBtn">Random</button>
+              <button type="button" id="classifyBtn">Classify</button>
+            </div>
+
+            <div class="api-panel">
+              <div class="prediction">
+                <strong>Prediction:</strong> <span id="predictionText">-</span>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="canvas-container">
+          <div id="p5Canvas"></div>
+          <div class="canvas-info">
+            <p>🖱️ Drag to rotate | 💫 Double-click to toggle rotation</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Audio Controls -->
+    <button type="button" id="muteBtn" class="floating-mute-btn">🔊</button>
+
+    <script src="sketch.js"></script>
+    <script>
+      // Geometry calculation on the frontend to match the Gradio backend
+      function calculateAllGeometry(major, minor, rotationDeg = 0) {
+        major = parseFloat(major);
+        minor = parseFloat(minor);
+        if (major <= 0 || minor <= 0) {
+          return {
+            area: 0,
+            eccentricity: 0,
+            convex_area: 0,
+            equiv_diameter: 0,
+            extent: 0,
+            perimeter: 0,
+            roundness: 0,
+            aspect_ratio: 0
+          };
+        }
+
+        const a = major / 2.0;
+        const b = minor / 2.0;
+
+        // Area
+        const area = Math.PI * a * b;
+
+        // Perimeter (Ramanujan approximation)
+        const h = Math.pow((a - b), 2) / Math.pow((a + b), 2);
+        const perimeter = Math.PI * (a + b) * (1 + (3 * h) / (10 + Math.sqrt(4 - 3 * h)));
+
+        // Aspect ratio
+        const aspect_ratio = major / minor;
+
+        // Eccentricity
+        let eccentricity = 0.0;
+        if (aspect_ratio >= 1) {
+          eccentricity = Math.sqrt(1 - Math.pow(minor / major, 2));
+        }
+
+        // Equiv diameter
+        const equiv_diameter = Math.sqrt(4 * area / Math.PI);
+
+        // Roundness
+        const roundness = (4 * Math.PI * area) / Math.pow(perimeter, 2);
+
+        // Convex area (approx)
+        const convex_area = area * 1.02;
+
+        // Bounding box of rotated ellipse
+        const theta = rotationDeg * Math.PI / 180.0;
+        const wx = Math.sqrt(Math.pow(a * Math.cos(theta), 2) + Math.pow(b * Math.sin(theta), 2));
+        const wy = Math.sqrt(Math.pow(a * Math.sin(theta), 2) + Math.pow(b * Math.cos(theta), 2));
+        const bbox_area = (2 * wx) * (2 * wy);
+        const extent = bbox_area > 0 ? area / bbox_area : 0;
+
+        return {
+          area: Math.round(area),
+          eccentricity: Number(eccentricity.toFixed(4)),
+          convex_area: Math.round(convex_area),
+          equiv_diameter: Number(equiv_diameter.toFixed(2)),
+          extent: Number(extent.toFixed(4)),
+          perimeter: Number(perimeter.toFixed(2)),
+          roundness: Number(roundness.toFixed(4)),
+          aspect_ratio: Number(aspect_ratio.toFixed(4))
+        };
+      }
+
+      function updateCalculatedDisplay(values) {
+        document.getElementById('areaValue').textContent = values.area;
+        document.getElementById('perimeterValue').textContent = values.perimeter;
+        document.getElementById('equivDiameterValue').textContent = values.equiv_diameter;
+        document.getElementById('extentValue').textContent = values.extent;
+      }
+
+      // Wire sliders to calculation and display
+      const majorSlider = document.getElementById('majorAxis');
+      const minorSlider = document.getElementById('minorAxis');
+      const majorVal = document.getElementById('majorAxisValue');
+      const minorVal = document.getElementById('minorAxisValue');
+
+      function refreshFromSliders() {
+        majorVal.textContent = majorSlider.value;
+        minorVal.textContent = minorSlider.value;
+        const geom = calculateAllGeometry(majorSlider.value, minorSlider.value, 0);
+        updateCalculatedDisplay(geom);
+      }
+
+      majorSlider.addEventListener('input', refreshFromSliders);
+      minorSlider.addEventListener('input', refreshFromSliders);
+
+      // Initialize display
+      refreshFromSliders();
+
+      // Classify button sends POST to the backend matching Gradio's /classify/ endpoint
+      document.getElementById('classifyBtn').addEventListener('click', async () => {
+        const endpoint = '/proxy/classify';
+
+        const major = parseFloat(document.getElementById('majorAxis').value);
+        const minor = parseFloat(document.getElementById('minorAxis').value);
+        const geom = calculateAllGeometry(major, minor, 0);
+
+        // Build payload using the same field names used in the Gradio backend
+        const payload = {
+          Area: parseInt(geom.area),
+          MajorAxisLength: parseFloat(major),
+          MinorAxisLength: parseFloat(minor),
+          Eccentricity: parseFloat(geom.eccentricity),
+          ConvexArea: parseInt(geom.convex_area),
+          EquivDiameter: parseFloat(geom.equiv_diameter),
+          Extent: parseFloat(geom.extent),
+          Perimeter: parseFloat(geom.perimeter),
+          Roundness: parseFloat(geom.roundness),
+          // NOTE: backend code expects key "AspectRation" (typo); keep it to match
+          AspectRation: parseFloat(geom.aspect_ratio)
+        };
+
+        try {
+          const resp = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          if (!resp.ok) {
+            document.getElementById('predictionText').textContent = 'Error: ' + resp.status + ' ' + resp.statusText;
+            return;
+          }
+
+          const data = await resp.json();
+          // Gradio backend returns { "predicted_class": "..." } (per python)
+          const pred = data.predicted_class || data.pred || JSON.stringify(data);
+          document.getElementById('predictionText').textContent = pred;
+        } catch (err) {
+          document.getElementById('predictionText').textContent = 'Error: ' + err.message;
+        }
+      });
+    </script>
+  </body>
+</html>

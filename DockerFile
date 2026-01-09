@@ -1,0 +1,27 @@
+# Multi-line, minimal, production-ready Dockerfile for the rice-painter app
+# Uses a small official Node image, installs only production deps and runs as non-root
+FROM node:22-alpine
+
+# Set working directory
+WORKDIR /usr/src/app
+
+# Copy package manifests and install dependencies first to leverage cache
+COPY package*.json ./
+
+# Install production dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy application source
+COPY . .
+
+# Use the built-in 'node' non-root user provided by the official image for safety
+RUN chown -R node:node /usr/src/app
+USER node
+
+# Expose the app port. Default container port is 5003 to match docker-compose mapping.
+ENV NODE_ENV=production
+ENV PORT=5003
+EXPOSE 5003
+
+# Start the app directly (uses server.js as main in package.json)
+CMD ["node", "server.js"]
