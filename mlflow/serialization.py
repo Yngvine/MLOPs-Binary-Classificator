@@ -148,10 +148,10 @@ def serialize_best_model(model_type="xgboost"):
         print(f"Warning: Could not load feature metadata ({e}). Using default n_features={n_features}")
 
     # Output path
-    # We overwrite the same file so the API picks it up automatically, regardless of the model type
-    output_path = os.path.join(local_artifacts_path, "xgboost_binary.onnx")
+    # We overwrite the same file so the API picks it up automatically, regardless of the model typ
     
     if model_type.lower() == "xgboost":
+        output_path = os.path.join(local_artifacts_path, "xgboost_binary.onnx")
         # LOAD XGBOOST MODEL
         xgb_model = mlflow_xgboost.load_model(model_uri)
 
@@ -174,6 +174,7 @@ def serialize_best_model(model_type="xgboost"):
             print(f"Error during ONNX export: {e}")
             
     elif model_type.lower() == "tabnet":
+        output_path = os.path.join(local_artifacts_path, "tabnet_binary.onnx")
         # LOAD TABNET MODEL
         # It was saved as sklearn flavor
         print("Loading TabNet model...")
@@ -183,34 +184,42 @@ def serialize_best_model(model_type="xgboost"):
         
         try:
             # Wrap the network
-            # tabnet_clf.network is the PyTorch module
-            # Pylance/MyPy doesn't know tabnet_clf has 'network' attr because it is loaded dynamically
-            # Cast it or ignore type
             network = getattr(tabnet_clf, "network")
             model_wrapper = TabNetOnnxWrapper(network)
             model_wrapper.eval()
+            model_wrapper.cpu()
             
             # Dummy Input
             dummy_input = torch.randn(1, n_features)
             
             # Export
+            # WE REMOVE dynamic_axes due to torch.onnx Dynamo issues
+            # We will use static batch size (1) for now, or need to configure dynamic_shapes properly
+            print("Exporting model to ONNX...")
             torch.onnx.export(
                 model_wrapper,
                 (dummy_input,),
                 output_path,
                 export_params=True,
-                opset_version=14, # Higher opset usually better for complex ops
+                opset_version=14, 
                 do_constant_folding=True,
                 input_names=['float_input'],
-                output_names=['label', 'probabilities'],
-                dynamic_axes={'float_input': {0: 'batch_size'},
-                              'label': {0: 'batch_size'},
-                              'probabilities': {0: 'batch_size'}}
+                output_names=['label', 'probabilities']
+                # dynamic_axes={...}  <-- REMOVED to avoid Dynamo constraints error
             )
             print("TabNet model serialized successfully.")
             
         except Exception as e:
-            print(f"Error during TabNet ONNX export: {e}")
+            # Handle potential encoding errors on Windows if the exception message contains special chars (like emojis)
+            print("Error during TabNet ONNX export. See traceback below:")
+            import traceback
+            traceback.print_exc()
+            
+            # Safe print of exception message
+            try:
+                print(f"Exception message: {e}")
+            except Exception:
+                 print(f"Exception message (ascii): {str(e).encode('ascii', 'replace').decode('ascii')}")
 
 if __name__ == "__main__":
     import argparse

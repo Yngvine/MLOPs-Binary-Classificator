@@ -86,21 +86,25 @@ def calculate_metrics(y_true, y_pred, y_prob):
     
     return metrics, cm, cm_norm
 
-def objective_xgboost(trial, X, y):
-    """Optuna Objective Function for XGBoost"""
-    
+def objective_xgboost(trial, X, y, prefix: str = ""):
+    """Optuna Objective Function for XGBoost.
+
+    prefix: used to namespace parameter names when running mixed studies.
+    """
+    p = lambda name: f"{prefix}{name}"
+
     # Define Hyperparameter Search Space
     params = {
         'objective': 'binary:logistic',
         'eval_metric': ['aucpr', 'logloss'],
         'booster': 'gbtree',
-        'lambda': trial.suggest_float('lambda', 1e-8, 1.0, log=True),
-        'alpha': trial.suggest_float('alpha', 1e-8, 1.0, log=True),
-        'max_depth': trial.suggest_int('max_depth', 1, 9),
-        'eta': trial.suggest_float('eta', 1e-8, 1.0, log=True),
-        'gamma': trial.suggest_float('gamma', 1e-8, 1.0, log=True),
-        'grow_policy': trial.suggest_categorical('grow_policy', ['depthwise', 'lossguide']),
-        'scale_pos_weight': trial.suggest_float('scale_pos_weight', 1, 100), # Important for imbalance
+        'lambda': trial.suggest_float(p('lambda'), 1e-8, 1.0, log=True),
+        'alpha': trial.suggest_float(p('alpha'), 1e-8, 1.0, log=True),
+        'max_depth': trial.suggest_int(p('max_depth'), 1, 9),
+        'eta': trial.suggest_float(p('eta'), 1e-8, 1.0, log=True),
+        'gamma': trial.suggest_float(p('gamma'), 1e-8, 1.0, log=True),
+        'grow_policy': trial.suggest_categorical(p('grow_policy'), ['depthwise', 'lossguide']),
+        'scale_pos_weight': trial.suggest_float(p('scale_pos_weight'), 1, 100), # Important for imbalance
         'verbosity': 0
     }
 
@@ -194,28 +198,32 @@ def objective_xgboost(trial, X, y):
         # Return the metric we want to OPTIMIZE (AUC-PR)
         return avg_auc_pr
 
-def objective_tabnet(trial, X, y):
-    """Optuna Objective Function for TabNet"""
+def objective_tabnet(trial, X, y, prefix: str = ""):
+    """Optuna Objective Function for TabNet.
+
+    prefix: used to namespace parameter names when running mixed studies.
+    """
+    p = lambda name: f"{prefix}{name}"
     
     # Define Hyperparameter Search Space
-    n_d = trial.suggest_int('n_d', 8, 64)
+    n_d = trial.suggest_int(p('n_d'), 8, 64)
     # n_a is usually equal to n_d
     n_a = n_d
     
     params = {
         'n_d': n_d,
         'n_a': n_a, 
-        'n_steps': trial.suggest_int('n_steps', 3, 10),
-        'gamma': trial.suggest_float('gamma', 1.0, 2.0),
-        'lambda_sparse': trial.suggest_float('lambda_sparse', 1e-6, 1e-1, log=True),
-        'optimizer_params': dict(lr=trial.suggest_float('lr', 2e-2, 2e-1)),
-        'mask_type': trial.suggest_categorical('mask_type', ['entmax', 'sparsemax']),
+        'n_steps': trial.suggest_int(p('n_steps'), 3, 10),
+        'gamma': trial.suggest_float(p('gamma'), 1.0, 2.0),
+        'lambda_sparse': trial.suggest_float(p('lambda_sparse'), 1e-6, 1e-1, log=True),
+        'optimizer_params': dict(lr=trial.suggest_float(p('lr'), 2e-2, 2e-1)),
+        'mask_type': trial.suggest_categorical(p('mask_type'), ['entmax', 'sparsemax']),
         'verbose': 0,
         'seed': 42
     }
     
-    batch_size = trial.suggest_categorical('batch_size', [256, 512, 1024, 2048])
-    virtual_batch_size = trial.suggest_categorical('virtual_batch_size', [128, 256])
+    batch_size = trial.suggest_categorical(p('batch_size'), [256, 512, 1024, 2048])
+    virtual_batch_size = trial.suggest_categorical(p('virtual_batch_size'), [128, 256])
     max_epochs = 100 
 
     # K-Fold Cross Validation
@@ -288,9 +296,9 @@ def objective_combined(trial, X, y):
     classifier_name = trial.suggest_categorical("classifier", ["xgboost", "tabnet"])
     
     if classifier_name == "xgboost":
-        return objective_xgboost(trial, X, y)
+        return objective_xgboost(trial, X, y, prefix="xgb_")
     else:
-        return objective_tabnet(trial, X, y)
+        return objective_tabnet(trial, X, y, prefix="tab_")
 
 def run_optimization(model_type="xgboost"):
     X, y = load_data()
