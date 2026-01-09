@@ -1,12 +1,16 @@
 import html
 import os
+import base64
 
 def get_rice_visualizer_html():
     # Load Audio Base64
     try:
-        audio_path = os.path.join(os.path.dirname(__file__), "audio_b64.txt")
-        with open(audio_path, "r") as f:
-            audio_data = f.read().strip()
+        # We now store as raw .mp3 to save space, but convert to base64 on the fly for the HTML embedding
+        audio_path = os.path.join(os.path.dirname(__file__), "background-music.mp3")
+        with open(audio_path, "rb") as f:
+            audio_binary = f.read()
+            audio_data = base64.b64encode(audio_binary).decode('utf-8')
+            
         audio_src = f"data:audio/mp3;base64,{audio_data}"
     except Exception as e:
         print(f"Error loading audio: {e}")
