@@ -15,6 +15,7 @@ from prometheus_client import Counter, Gauge, generate_latest, CONTENT_TYPE_LATE
 
 
 from custom_lib import predict
+from custom_lib.model import set_active_model
 
 app = FastAPI(
     title="Rice Classification API",
@@ -34,6 +35,15 @@ PREDICTION_COUNTER = Counter(
 # This ensures the metric appears in /metrics right from the start
 PREDICTION_COUNTER.labels(class_label="Gonen").inc(0)
 PREDICTION_COUNTER.labels(class_label="Jasmine").inc(0)
+
+# Track active model name
+ACTIVE_MODEL_GAUGE = Gauge(
+    "active_model_info",
+    "Info about the currently active model",
+    ["model_name"]
+)
+# Set default
+ACTIVE_MODEL_GAUGE.labels(model_name="xgboost_binary.onnx").set(1)
 
 MODEL_F1_SCORE = Gauge(
     "model_f1_score", 
@@ -80,7 +90,10 @@ class RiceFeatures(BaseModel):
     Perimeter: float
     Roundness: float
     AspectRation: float
+    ModelName: str = "xgboost_binary.onnx" # Optional, default to xgboost
 
+# class ModelSwitchRequest(BaseModel):
+#     model_name: str
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
@@ -96,10 +109,25 @@ async def metrics():
     return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
+# REMOVED /switch_model endpoint as requested
+# @app.post("/switch_model/")
+# async def switch_model(request: ModelSwitchRequest):
+#     ...
+
+
 @app.post("/classify/")
 async def classify_rice(features: RiceFeatures):
-    """Classify rice grain based on features."""
+    """Classify rice grain based on features"""
     try:
+        # 1. Update active model if requested (and different)
+        # set_active_model handles avoiding reload if same model
+        set_active_model(features.ModelName)
+        
+        # Update metric to reflect what model was just used
+        ACTIVE_MODEL_GAUGE.labels(model_name="xgboost_binary.onnx").set(0)
+        ACTIVE_MODEL_GAUGE.labels(model_name="tabnet_binary.onnx").set(0) # Potential name
+        ACTIVE_MODEL_GAUGE.labels(model_name=features.ModelName).set(1)
+
         # Convert features to list in correct order
         feature_list = [
             features.Area,
