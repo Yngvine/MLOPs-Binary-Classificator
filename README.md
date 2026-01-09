@@ -14,7 +14,7 @@ MLOPs-Binary-Classificator/
 │   └── train.py         # Orchestrator for training, serialization, and metrics
 ├── data/                # Dataset storage
 ├── graf/                # Grafana configuration (Docker, Datasource, Dashboard)
-├── mlflow/              # MLflow training & serialization scripts
+├── ml_modules/          # MLflow training & serialization scripts
 ├── prom/                # Prometheus configuration
 ├── templates/           # HTML templates for the API UI
 ├── tests/               # Unit tests

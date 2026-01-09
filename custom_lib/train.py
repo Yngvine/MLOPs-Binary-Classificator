@@ -1,15 +1,10 @@
 import sys
 from pathlib import Path
 
-# Add the project root to sys.path so imports work correctly
-sys.path.append(str(Path(__file__).parent.parent / "mlflow"))
 
-# Pylint confuses the local 'mlflow' folder with the library 'mlflow'
 from mlflow.tracking import MlflowClient # pylint: disable=no-name-in-module, import-error
-# Note: Assuming your local folder is named 'mlflow' and contains training.py
-# If this conflicts with the library 'mlflow', you might need to rename the folder to 'ml_modules'
-from training import run_optimization, EXP_XGBOOST #type: ignore
-from serialization import serialize_best_model #type: ignore
+from ml_modules.training import run_optimization, EXP_XGBOOST #type: ignore
+from ml_modules.serialization import serialize_best_model #type: ignore
 import json
 
 def get_best_metric_from_mlflow(experiment_name: str, metric_name: str = "val_f1") -> float:

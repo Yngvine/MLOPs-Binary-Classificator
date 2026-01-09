@@ -10,8 +10,8 @@ import onnxruntime as ort
 
 from .data import CLASS_LABELS, FEATURE_COLUMNS
 
-# Assuming the model is stored in the mlflow/model directory (DEFAULT)
-MODEL_DIR = Path(__file__).parent.parent / "mlflow" / "model"
+# Assuming the model is stored in the ml_modules/model directory
+MODEL_DIR = Path(__file__).parent.parent / "ml_modules" / "model"
 # Default model path - can be switched
 DEFAULT_MODEL_NAME = "xgboost_binary.onnx"
 

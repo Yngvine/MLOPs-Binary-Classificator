@@ -20,7 +20,7 @@ ENV PATH="/app/.venv/bin:${PATH}"
 # Copy app code
 COPY api/ /app/api/
 COPY custom_lib/ /app/custom_lib/
-COPY mlflow/model/ /app/mlflow/model/
+COPY ml_modules/model/ /app/ml_modules/model/
 COPY templates/ /app/templates/
 COPY pyproject.toml uv.lock /app/
 COPY metrics.json /app/metrics.json
