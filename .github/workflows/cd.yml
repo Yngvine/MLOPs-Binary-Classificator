@@ -3,7 +3,7 @@ name: Build and push Docker image
 on:
   push:
     branches:
-      - main
+      - ui-frontend-react
 
 jobs:
   build-and-push:
