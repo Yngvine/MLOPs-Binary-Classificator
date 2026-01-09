@@ -40,7 +40,7 @@ def calculate_roundness(area, perimeter):
 def classify_rice(
     area, major_axis, minor_axis, eccentricity, 
     convex_area, equiv_diameter, extent, perimeter, 
-    roundness, aspect_ratio, api_url
+    roundness, aspect_ratio, api_url, model_name="xgboost_binary.onnx"
 ):
     """
     Sends the features to the backend API for classification.
@@ -57,10 +57,13 @@ def classify_rice(
         "Extent": float(extent),
         "Perimeter": float(perimeter),
         "Roundness": float(roundness),
-        "AspectRation": float(aspect_ratio)
+        "AspectRation": float(aspect_ratio),
+        "ModelName": str(model_name)
     }
     
     try:
+        # Debug print
+        print(f"Sending request to {url} using model: {model_name}")
         response = requests.post(url, json=payload, timeout=10)
         response.raise_for_status()
         result = response.json()
@@ -136,7 +139,15 @@ def build_ui():
         gr.Markdown("Enter the geometric features of the rice grain to classify it as **Jazmine** or **Gonen**.")
         
         # Global API URL (applied to both tabs)
-        api_url = gr.Textbox(label="Backend API URL", value=DEFAULT_API_URL)
+        with gr.Row():
+            api_url = gr.Textbox(label="Backend API URL", value=DEFAULT_API_URL, scale=3)
+            # Dropdown to select model
+            model_selector = gr.Dropdown(
+                label="Model Selection", 
+                choices=["xgboost_binary.onnx", "tabnet_binary.onnx"],
+                value="xgboost_binary.onnx",
+                scale=1
+            )
 
         with gr.Tabs():
             # =========================================================================
@@ -206,16 +217,16 @@ def build_ui():
                 demo.load(fn=update_sim_fields, inputs=sim_inputs, outputs=sim_display_outputs, js=update_viz_js)
 
                 # Event: Classify
-                def classify_simulation(maj, min, rot, url):
+                def classify_simulation(maj, min, rot, url, model):
                     # Recalculate to ensure fresh data
                     (area, ecc, convex, equiv, extent, perim, round_val, aspect) = calculate_all_geometry(maj, min, rot)
                     return classify_rice(
-                        area, maj, min, ecc, convex, equiv, extent, perim, round_val, aspect, url
+                        area, maj, min, ecc, convex, equiv, extent, perim, round_val, aspect, url, model
                     )
                 
                 sim_btn.click(
                     fn=classify_simulation,
-                    inputs=[sim_major, sim_minor, sim_rotation, api_url],
+                    inputs=[sim_major, sim_minor, sim_rotation, api_url, model_selector],
                     outputs=sim_output
                 )
 
@@ -284,7 +295,7 @@ def build_ui():
                     inputs=[
                         area, major_axis, minor_axis, eccentricity, 
                         convex_area, equiv_diameter, extent, perimeter, 
-                        roundness, aspect_ratio, api_url
+                        roundness, aspect_ratio, api_url, model_selector
                     ],
                     outputs=output_text
                 )
