@@ -201,13 +201,27 @@ def serialize_best_model(model_type="xgboost"):
                 (dummy_input,),
                 output_path,
                 export_params=True,
-                opset_version=14, 
+                opset_version=18, # Using 18 to match available opset and avoid conversion errors
                 do_constant_folding=True,
                 input_names=['float_input'],
                 output_names=['label', 'probabilities']
                 # dynamic_axes={...}  <-- REMOVED to avoid Dynamo constraints error
             )
             print("TabNet model serialized successfully.")
+            
+            # Post-processing: Check and repack if external data file was created
+            if os.path.exists(output_path + ".data"):
+                print("External data file detected. Attempting to repack into single ONNX file...")
+                try:
+                    import onnx
+                    # Load model (loads external data automatically)
+                    model_proto = onnx.load(output_path)
+                    # Save model (defaults to single file if < 2GB)
+                    onnx.save(model_proto, output_path)
+                    print("Repack successful. Removing external .data file...")
+                    os.remove(output_path + ".data")
+                except Exception as rep_e:
+                    print(f"Warning: Could not repack model to single file: {rep_e}")
             
         except Exception as e:
             # Handle potential encoding errors on Windows if the exception message contains special chars (like emojis)
