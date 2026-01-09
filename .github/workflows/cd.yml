@@ -36,8 +36,13 @@ jobs:
           git config --global user.name "GitHub Action"
 
           # Create a fresh orphan branch with NO history
-          # This ensures we don't push old deleted large files (blobs) to HF
           git checkout --orphan temp-deploy-branch
+          
+          # Initialize LFS and track mp3 explictly to satisfy HF binary checks
+          git lfs install
+          echo "*.mp3 filter=lfs diff=lfs merge=lfs -text" > .gitattributes
+          
+          # Add all files (including the new/updated .gitattributes)
           git add .
           git commit -m "Deploy to HF Spaces"
 
