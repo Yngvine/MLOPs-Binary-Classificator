@@ -1,0 +1,6 @@
+services:
+  mlops-bc:
+    image: yngvin/mlops-bc:latest
+    restart: unless-stopped
+    ports:
+      - 5003:8000
