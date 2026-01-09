@@ -15,7 +15,7 @@ import json
 
 def get_best_metric_from_mlflow(experiment_name: str, metric_name: str = "val_f1") -> float:
     """
-    Queries MLflow to find the best run in the experiment and returns the specific metric.
+    Queries MLflow to find the best run in the experiment and returns the specific metric
     """
     print(f"Querying MLflow for best {metric_name} in experiment '{experiment_name}'...")
     
