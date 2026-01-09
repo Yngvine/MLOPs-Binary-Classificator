@@ -209,3 +209,9 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+
+# Node package directories
+# Ignore all directories named `node_modules` anywhere in the repository
+node_modules/
+**/node_modules/
