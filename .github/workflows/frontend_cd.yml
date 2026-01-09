@@ -1,9 +1,9 @@
-name: Build and push Docker image
+name: Build and push Docker image RICE FRONTEND
 
 on:
   push:
     branches:
-      - ui-frontend-react
+      - ui-fronted-react
 
 jobs:
   build-and-push:
