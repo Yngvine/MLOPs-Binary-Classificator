@@ -87,10 +87,10 @@ def calculate_all_geometry(major, minor, rotation_deg=0):
     a = major / 2
     b = minor / 2
     
-    # Area
+    # Area (mm^2)
     area = math.pi * a * b
     
-    # Perimeter (Ramanujan approximation)
+    # Perimeter (Ramanujan approximation) (mm)
     h = ((a - b) ** 2) / ((a + b) ** 2)
     perimeter = math.pi * (a + b) * (1 + (3 * h) / (10 + math.sqrt(4 - 3 * h)))
     
@@ -101,14 +101,16 @@ def calculate_all_geometry(major, minor, rotation_deg=0):
     eccentricity = 0.0
     if aspect_ratio >= 1:
         eccentricity = math.sqrt(1 - (minor/major)**2)
+    else:
+        eccentricity = math.sqrt(1 - (major/minor)**2)
         
-    # Equiv Diameter
+    # Equiv Diameter (mm)
     equiv_diameter = math.sqrt(4 * area / math.pi)
     
     # Roundness
     roundness = (4 * math.pi * area) / (perimeter ** 2)
     
-    # Convex Area (approximate slightly larger than Area for rice grains)
+    # Convex Area (approximate slightly larger than Area for rice grains) (mm^2)
     convex_area = area * 1.02
     
     # Extent (Area / BoundingBox Area)
