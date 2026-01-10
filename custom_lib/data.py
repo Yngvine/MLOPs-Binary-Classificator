@@ -481,8 +481,9 @@ def create_imbalanced_dataset(
     print(f"Created imbalanced dataset: {output_path}")
     print("\nOriginal distribution:")
     for cls, count in original_counts.items():
+        pct = count / len(df) * 100
         print(
-            f"  Class {cls} ({CLASS_LABELS.get(cast(int, cls), str(cls))}): {count:,}"
+            f"  Class {cls} ({CLASS_LABELS.get(cast(int, cls), str(cls))}): {count:,} ({pct:.1f}%)"
         )
     print("\nNew distribution:")
     for cls, count in new_counts.items():
