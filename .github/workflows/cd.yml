@@ -38,12 +38,22 @@ jobs:
           # Create a fresh orphan branch with NO history
           git checkout --orphan temp-deploy-branch
           
-          # Initialize LFS and track mp3 explictly to satisfy HF binary checks
+          # Initialize LFS
           git lfs install
+
+          # Create .gitattributes FIRST and ensure consistent tracking
           echo "*.mp3 filter=lfs diff=lfs merge=lfs -text" > .gitattributes
+          git add .gitattributes
           
-          # Add all files (including the new/updated .gitattributes)
+          # Explicitly track mp3 files with LFS command to ensure hooks run
+          git lfs track "*.mp3"
+          git add .gitattributes
+
+          # Add all files (now that LFS is configured)
+          # We force re-adding to ensure the attributes apply
+          git add --renormalize .
           git add .
+          
           git commit -m "Deploy to HF Spaces"
 
           # Add remote
